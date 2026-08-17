@@ -1,9 +1,13 @@
+<?php
+$titulo  = isset($titulo) ? $titulo : 'Sala Táctica — Blog de Rainbow Six Siege';
+$seccion = isset($seccion) ? $seccion : 'inicio';
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sala Táctica — Blog de Rainbow Six Siege (Bootstrap 3)</title>
+<title><?php echo htmlspecialchars($titulo); ?></title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -81,27 +85,16 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">Sala Táctica</a>
+      <a class="navbar-brand" href="index.php">Sala Táctica</a>
     </div>
     <div class="collapse navbar-collapse" id="navMenu">
       <ul class="nav navbar-nav navbar-right">
-        <li class="active"><a href="#">Inicio <span class="sr-only">(actual)</span></a></li>
-        <li><a href="#">Operadores</a></li>
-        <li><a href="#">Mapas</a></li>
-        <li><a href="#">Esports</a></li>
+        <li class="<?php echo $seccion === 'inicio' ? 'active' : ''; ?>"><a href="index.php">Inicio<?php if ($seccion === 'inicio') echo ' <span class="sr-only">(actual)</span>'; ?></a></li>
+        <li class="<?php echo $seccion === 'estrategia' ? 'active' : ''; ?>"><a href="estrategia.php">Estrategia</a></li>
+        <li class="<?php echo $seccion === 'operadores' ? 'active' : ''; ?>"><a href="operadores.php">Operadores</a></li>
+        <li class="<?php echo $seccion === 'mapas' ? 'active' : ''; ?>"><a href="mapas.php">Mapas</a></li>
+        <li class="<?php echo $seccion === 'esports' ? 'active' : ''; ?>"><a href="esports.php">Esports</a></li>
       </ul>
     </div>
   </div>
 </nav>
-
-<footer>
-  <div class="container flex-footer">
-    <p class="mb-0">© 2026 Sala Táctica</p>
-    <a href="#">Contacto</a>
-  </div>
-</footer>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
-
-</body>
-</html>
