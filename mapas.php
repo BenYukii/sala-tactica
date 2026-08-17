@@ -4,10 +4,12 @@ $seccion = 'mapas';
 include 'header.php';
 ?>
 
-<header class="container py-5">
-  <p class="eyebrow mb-2">Mapas · Rainbow Six Siege</p>
-  <h1 class="hero-title">Mapas</h1>
-  <p class="mt-2" style="max-width:600px; color:var(--muted)">Zonas clave, rotaciones y verticalidad por mapa.</p>
+<header class="container-fluid hero-banner py-5">
+  <div class="container">
+    <p class="eyebrow mb-2">Mapas · Rainbow Six Siege</p>
+    <h1 class="hero-title">Mapas</h1>
+    <p class="mt-2" style="max-width:600px; color:var(--muted)">Zonas clave, rotaciones y verticalidad por mapa.</p>
+  </div>
 </header>
 
 <main class="container">

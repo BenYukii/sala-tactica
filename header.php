@@ -72,6 +72,18 @@ $seccion = isset($seccion) ? $seccion : 'inicio';
   .btn-outline-light:hover{ background:var(--text); color:var(--bg); }
 
   footer{ background:var(--panel); border-top:1px solid var(--line); padding:2rem 0; margin-top:2.5rem; color:var(--muted); }
+
+.hero-banner{
+  background-image: linear-gradient(180deg, rgba(21,24,28,.3), rgba(21,24,28,.85)), url('fotobanner/rainbow.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 </style>
 </head>
 <body>

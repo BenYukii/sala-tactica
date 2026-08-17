@@ -4,10 +4,12 @@ $seccion = 'estrategia';
 include 'header.php';
 ?>
 
-<header class="container py-5">
-  <p class="eyebrow mb-2">Estrategia · Rainbow Six Siege</p>
-  <h1 class="hero-title">Guías de estrategia</h1>
-  <p class="mt-2" style="max-width:600px; color:var(--muted)">Rotaciones, gestión de utilidad y decisiones por ronda.</p>
+<header class="container-fluid hero-banner py-5">
+  <div class="container">
+    <p class="eyebrow mb-2">Estrategia · Rainbow Six Siege</p>
+    <h1 class="hero-title">Guías de estrategia</h1>
+    <p class="mt-2" style="max-width:600px; color:var(--muted)">Rotaciones, gestión de utilidad y decisiones por ronda.</p>
+  </div>
 </header>
 
 <main class="container">

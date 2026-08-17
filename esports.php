@@ -4,10 +4,12 @@ $seccion = 'esports';
 include 'header.php';
 ?>
 
-<header class="container py-5">
-  <p class="eyebrow mb-2">Esports · Rainbow Six Siege</p>
-  <h1 class="hero-title">Esports</h1>
-  <p class="mt-2" style="max-width:600px; color:var(--muted)">Resultados, formatos y análisis de la escena competitiva.</p>
+<header class="container-fluid hero-banner py-5">
+  <div class="container">
+    <p class="eyebrow mb-2">Esports · Rainbow Six Siege</p>
+    <h1 class="hero-title">Esports</h1>
+    <p class="mt-2" style="max-width:600px; color:var(--muted)">Resultados, formatos y análisis de la escena competitiva.</p>
+  </div>
 </header>
 
 <main class="container">
