@@ -8,6 +8,7 @@ include 'header.php';
   <p class="eyebrow mb-2">Estrategia · Rainbow Six Siege</p>
   <h1 class="hero-title">Guías y análisis para jugar en equipo</h1>
   <p class="mt-2" style="max-width:600px; color:var(--muted)">Rotaciones, refuerzos y lectura de mapa explicados sin relleno.</p>
+  <button type="button" class="btn btn-primary btn-lg mt-2">Ver guías</button>
 </header>
 
 <main class="container">
