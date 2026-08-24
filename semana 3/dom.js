@@ -59,4 +59,44 @@ document.addEventListener('DOMContentLoaded', function () {
   nuevaCard.appendChild(leerMas);
 
   document.querySelector('section[aria-label]').appendChild(nuevaCard);
+
+  const htmlFuente = '<!DOCTYPE html><html><head><title>Documento externo</title></head>' +
+    '<body><h1>Titulo principal</h1><ul id="lista"><li>Uno</li><li>Dos</li><li>Tres</li></ul></body></html>';
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(htmlFuente, 'text/html');
+
+  console.log('Documento parseado con DOMParser');
+  console.log('Titulo del documento:', doc.title);
+  console.log('Items de lista:', doc.getElementsByTagName('li').length);
+  console.log('H1 antes:', doc.getElementsByTagName('h1')[0].textContent);
+
+  doc.getElementsByTagName('h1')[0].textContent = 'Titulo actualizado';
+  const itemNuevo = doc.createElement('li');
+  itemNuevo.textContent = 'Cuatro';
+  doc.getElementById('lista').appendChild(itemNuevo);
+
+  console.log('H1 despues:', doc.getElementsByTagName('h1')[0].textContent);
+  console.log('Items de lista despues:', doc.getElementsByTagName('li').length);
+
+  const responseAPI = {
+    "status": 200,
+    "message": "Categorias obtenidas",
+    "data": [
+      { "id": "1", "nombre": "Estrategia" },
+      { "id": "2", "nombre": "Operadores" },
+      { "id": "3", "nombre": "Mapas" },
+      { "id": "4", "nombre": "Esports" }
+    ]
+  };
+
+  let cmbCategoria = document.getElementById("cmbCategoria");
+  responseAPI.data.forEach((cat) => {
+    let optionAux = document.createElement("option");
+    optionAux.setAttribute("value", cat.id);
+    optionAux.innerText = cat.nombre;
+    cmbCategoria.appendChild(optionAux);
+  });
+  console.log(responseAPI.message + ':', cmbCategoria.options.length);
 });
+
