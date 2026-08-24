@@ -11,5 +11,7 @@
       <li><a href="operadores.php">Operadores (6)</a></li>
       <li><a href="mapas.php">Mapas (4)</a></li>
     </ul>
+    <label for="cmbCategoria" class="sr-only">Filtrar por categoría</label>
+    <select id="cmbCategoria" name="cmbCategoria" class="form-control"></select>
   </div>
 </aside>
