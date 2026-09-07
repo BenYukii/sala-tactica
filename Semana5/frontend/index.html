@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Nonna — Pasta hecha a mano</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="wrap">
+  <nav>
+    <div class="logo">La <em>Nonna</em></div>
+    <div class="nav-links">
+      <a href="#menu">Menú</a>
+      <a href="#story">Nuestra Historia</a>
+      <a href="#visit">Visitanos</a>
+    </div>
+    <a class="nav-cta" href="#visit">Reserva una mesa</a>
+  </nav>
+</header>
+
+<section class="wrap hero">
+  <div>
+    <span class="hero-note">un recetario guardado desde 1961</span>
+    <h1>Pasta estirada a mano,<br>como nos enseñó la Nonna.</h1>
+    <p class="lede">Cada lasagna, tagliatelle y ravioli de este menú empieza igual que en su cocina — harina, huevos y sin atajos.</p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="#menu">Ver el menú</a>
+      <a class="btn-ghost" href="#visit">Encuéntranos</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="steam"></div>
+    <div class="plate">
+      <div class="plate-label">Lasagna<br>alla Nonna</div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap menu" id="menu">
+  <div class="section-head">
+    <h2>Desde la cocina</h2>
+    <p>Un menú corto, que cambia con las estaciones — todo hecho fresco esa mañana.</p>
+  </div>
+  <div class="menu-toolbar" role="group" aria-label="Filtrar por categoria">
+    <button class="filter-btn active" data-categoria="">Todos</button>
+    <button class="filter-btn" data-categoria="Pasta fresca">Pasta fresca</button>
+    <button class="filter-btn" data-categoria="Horneado">Horneado</button>
+    <button class="filter-btn" data-categoria="Clasico">Clasico</button>
+    <button class="filter-btn" data-categoria="Para compartir">Para compartir</button>
+    <button class="filter-btn" data-categoria="Postre">Postre</button>
+  </div>
+  <p class="menu-status" id="menu-status" aria-live="polite"></p>
+  <div class="menu-grid" id="menu-grid">
+    <div class="dish">
+      <span class="tag">La insignia</span>
+      <h3>Lasagna alla Nonna</h3>
+      <p>Ragú lento, bechamel, doce capas, horneada hasta dorar los bordes.</p>
+      <span class="price">$18</span>
+    </div>
+    <div class="dish">
+      <span class="tag">Pasta fresca</span>
+      <h3>Tagliatelle al Ragù</h3>
+      <p>Cintas hechas a mano con un ragú de cinco horas.</p>
+      <span class="price">$16</span>
+    </div>
+    <div class="dish">
+      <span class="tag">Pasta fresca</span>
+      <h3>Ravioli di Zucca</h3>
+      <p>Zapallo asado, mantequilla dorada, salvia y parmesano.</p>
+      <span class="price">$17</span>
+    </div>
+    <div class="dish">
+      <span class="tag">Horneado</span>
+      <h3>Cannelloni Spinaci</h3>
+      <p>Ricotta y espinaca enrolladas, horneadas en tomate y crema.</p>
+      <span class="price">$16</span>
+    </div>
+    <div class="dish">
+      <span class="tag">Clásico</span>
+      <h3>Fettuccine Alfredo</h3>
+      <p>Mantequilla, parmesano y pimienta recién molida.</p>
+      <span class="price">$15</span>
+    </div>
+    <div class="dish">
+      <span class="tag">Para compartir</span>
+      <h3>Pan de Ajo al Horno</h3>
+      <p>Horneado hasta dorar, pincelado con mantequilla de hierbas.</p>
+      <span class="price">$7</span>
+    </div>
+  </div>
+  <div class="menu-more">
+    <button class="btn-primary" id="btn-more" type="button">Ver más platos</button>
+  </div>
+</section>
+
+<div class="modal-backdrop" id="modal-backdrop">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Detalle del plato">
+    <button class="modal-close" id="modal-close" aria-label="Cerrar">×</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<section class="story" id="story">
+  <div class="wrap story-inner">
+    <div class="story-mark">&ldquo;</div>
+    <div>
+      <h2>Ella nunca medía nada.</h2>
+      <p>Nuestras recetas vienen de un cuaderno espiral con harina todavía pegada en las páginas. La Nonna cocinaba al ojo — una pizca de esto, un puñado de aquello — y por treinta años hemos intentado escribir lo que sus manos ya sabían.</p>
+      <p>Hoy, tres de sus nietos llevan la cocina. La pasta sigue estirada a mano, la salsa sigue hirviendo toda la tarde y el cuaderno sigue en el estante, por si acaso.</p>
+      <p class="story-sign">— La familia de La Nonna</p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap visit" id="visit">
+  <div class="visit-inner">
+    <div>
+      <h2>Visítanos</h2>
+      <div class="visit-detail">
+        <div class="label">Dirección</div>
+        <div class="value">142 Calle Tomate, Santiago</div>
+      </div>
+      <div class="visit-detail">
+        <div class="label">Horario</div>
+        <div class="value">Mar–Dom, 12:00–22:00 · Cerrado los lunes</div>
+      </div>
+      <div class="visit-detail">
+        <div class="label">Teléfono</div>
+        <div class="value">+56 9 1234 5678</div>
+      </div>
+    </div>
+    <div>
+      <h2 style="font-size:1.3rem; margin-bottom:16px;">Reserva una mesa</h2>
+      <form onsubmit="return false;">
+        <input type="text" placeholder="Nombre">
+        <input type="text" placeholder="Número de personas">
+        <input type="text" placeholder="Fecha y hora">
+        <a class="btn-primary" href="#" style="text-align:center; margin-top:6px;">Solicitar mesa</a>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer class="wrap">
+  La Nonna &middot; Pasta casera desde 1961
+</footer>
+
+<script src="js/app.js"></script>
+</body>
+</html>
