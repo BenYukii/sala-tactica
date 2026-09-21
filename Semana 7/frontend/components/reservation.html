@@ -1,0 +1,41 @@
+<section class="wrap visit" id="visit" aria-labelledby="visit-title">
+  <div class="visit-inner">
+    <div>
+      <h2 id="visit-title">Visítanos</h2>
+      <div class="visit-detail"><div class="label">Dirección</div><div class="value">142 Calle Tomate, Santiago</div></div>
+      <div class="visit-detail"><div class="label">Horario</div><div class="value">Mar–Dom, 12:00–22:00 · Cerrado los lunes</div></div>
+      <div class="visit-detail"><div class="label">Teléfono</div><div class="value">+56 9 1234 5678</div></div>
+    </div>
+    <div>
+      <h2 class="reservation-title">Reserva una mesa</h2>
+      <form id="reservation-form" novalidate>
+        <div class="form-field">
+          <label for="reservation-name">Nombre completo</label>
+          <input id="reservation-name" name="name" type="text" autocomplete="name" minlength="2" maxlength="80" required>
+          <small class="field-error" id="name-error"></small>
+        </div>
+        <div class="form-field">
+          <label for="reservation-email">Correo electrónico</label>
+          <input id="reservation-email" name="email" type="email" autocomplete="email" maxlength="120" required>
+          <small class="field-error" id="email-error"></small>
+        </div>
+        <div class="form-field">
+          <label for="reservation-people">Número de personas</label>
+          <input id="reservation-people" name="people" type="number" min="1" max="12" inputmode="numeric" required>
+          <small class="field-error" id="people-error"></small>
+        </div>
+        <div class="form-field">
+          <label for="reservation-datetime">Fecha y hora</label>
+          <input id="reservation-datetime" name="datetime" type="datetime-local" required>
+          <small class="field-error" id="datetime-error"></small>
+        </div>
+        <div class="form-field">
+          <label for="reservation-notes">Solicitud especial <span>(opcional)</span></label>
+          <textarea id="reservation-notes" name="notes" rows="3" maxlength="250"></textarea>
+        </div>
+        <button class="btn-primary" type="submit">Solicitar mesa</button>
+      </form>
+      <div class="reservation-result" id="reservation-result" role="status" aria-live="polite" tabindex="-1" hidden></div>
+    </div>
+  </div>
+</section>
