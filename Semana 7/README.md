@@ -2,6 +2,8 @@
 
 **Proyecto de desarrollo web · Entrega de la semana 7**
 
+🌐 **Demostración en línea:** [https://benyukii.github.io/sala-tactica/](https://benyukii.github.io/sala-tactica/)
+
 La Nonna es una aplicación web ambientada en un restaurante familiar de cocina italiana. Permite conocer su propuesta gastronómica, explorar una carta de platos y enviar solicitudes de reserva desde una misma interfaz.
 
 Esta entrega integra un frontend desarrollado con HTML, CSS y JavaScript con un backend en Node.js y Express. El servidor entrega la página y expone una API REST para consultar productos y registrar solicitudes. El propósito académico es demostrar la comunicación entre cliente y servidor, la organización del código en módulos, el uso de rutas y la validación de datos.
