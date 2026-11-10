@@ -1,0 +1,104 @@
+@startuml
+title La Nonna - gateway, identidad y políticas
+skinparam classAttributeIconSize 0
+left to right direction
+
+actor "Visitante" as guest
+actor "Cliente autenticado" as client
+actor "Administrador" as admin
+class ApiGateway {
+  +dispatch(method, path)
+  +authenticate(bearer)
+  +rateLimit(client)
+}
+class RouteDefinition {
+  +method
+  +pathPattern
+  +accessPolicy
+  +serviceTarget
+}
+class AuthenticationPolicy {
+  +validateSession(token)
+  +signVerifiedIdentity(claims)
+}
+class AuthorizationPolicy {
+  +requireRole(role)
+  +requireOwnership(resource, user)
+}
+class ServiceTarget {
+  +baseUrl
+  +timeout
+  +forward(request)
+}
+class SecretProvider {
+  +internalServiceToken
+  +identitySigningSecret
+}
+class AuthService {
+  +login(credentials)
+  +introspect(token)
+  +revoke(token)
+}
+class GraphQLGateway {
+  +execute(query, identity)
+  +enforceQueryLimits()
+}
+class Resolver {
+  +resolveMenu()
+  +resolveOrders(identity)
+}
+class InventoryService {
+  +getProducts()
+  +reserveStock(items)
+}
+class OrdersService {
+  +createOrder(identity, items)
+  +getOrders(identity)
+}
+class PaymentsService {
+  +createPayment(identity, order)
+  +verifyWebhook(signature, event)
+}
+database "DB por dominio\nsin acceso cruzado" as databases
+
+ApiGateway "1" *-- "1..*" RouteDefinition
+ApiGateway --> AuthenticationPolicy
+ApiGateway --> AuthorizationPolicy
+ApiGateway --> SecretProvider
+ApiGateway --> AuthService
+ApiGateway "1" --> "1..*" ServiceTarget
+GraphQLGateway "1" *-- "1..*" Resolver
+GraphQLGateway --> ServiceTarget
+Resolver --> InventoryService
+Resolver --> OrdersService
+OrdersService --> InventoryService : API interna\nreservar/liberar
+PaymentsService --> OrdersService : API interna\nvalidar/confirmar
+AuthService --> databases
+InventoryService --> databases
+OrdersService --> databases
+PaymentsService --> databases
+
+guest --> ApiGateway : rutas públicas permitidas
+client --> ApiGateway : Bearer token
+admin --> ApiGateway : Bearer + rol admin
+
+note right of ApiGateway
+Lista explícita por método y ruta.
+Rate limit general y de login.
+Cabeceras de identidad del navegador
+se descartan; contexto verificado se firma.
+end note
+note bottom of SecretProvider
+Referencias de entorno:
+INTERNAL_SERVICE_TOKEN
+IDENTITY_SIGNING_SECRET
+WEBPAY_WEBHOOK_SECRET
+Valores reales fuera del repositorio;
+Vault/rotación automática pendientes.
+end note
+note bottom of AuthorizationPolicy
+Gateway autoriza ruta/rol.
+Cada servicio vuelve a comprobar firma,
+rol y propiedad del recurso.
+end note
+@enduml

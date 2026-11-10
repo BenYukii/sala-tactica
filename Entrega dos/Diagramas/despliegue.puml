@@ -1,0 +1,59 @@
+@startuml
+title La Nonna - topologia de microservicios configurada
+left to right direction
+skinparam componentStyle rectangle
+
+actor "Visitante / Cliente / Admin" as user
+node "Host Docker\nunico puerto publicado: 4000" as host {
+  node "Red privada Docker\ninternal: true" as private {
+    node "gateway :4100\npublicado al host" as gateway {
+      component "API Gateway REST\nallowlist + rate limit" as api
+      component "Frontend estático" as frontend
+    }
+    node "auth :4101" as auth
+    node "clients :4102" as clients
+    node "inventory :4103" as inventory
+    node "orders :4104" as orders
+    node "payments :4105" as payments
+    node "reservations :4106" as reservations
+    node "graphql :4107\nprivado" as graphql
+  }
+  database "auth_data\nusuarios/sesiones" as authDb
+  database "clients_data\nperfiles" as clientsDb
+  database "inventory_data\nproductos/stock" as inventoryDb
+  database "orders_data\npedidos/líneas" as ordersDb
+  database "payments_data\npagos/eventos" as paymentsDb
+  database "reservations_data\nreservas" as reservationsDb
+}
+
+user --> api : HTTP/HTTPS
+api --> frontend : HTML/CSS/JS
+api --> auth : login / introspección\nHTTP privado
+api --> clients : perfiles
+api --> inventory : catálogo / administración
+api --> orders : pedidos
+api --> payments : pagos / webhook
+api --> reservations : reservas
+api --> graphql : consulta agregada
+graphql --> inventory : catálogo REST interno
+graphql --> orders : pedidos REST interno
+clients --> auth : crear identidad
+orders --> inventory : reservar/liberar stock
+payments --> orders : validar / confirmar
+auth --> authDb
+clients --> clientsDb
+inventory --> inventoryDb
+orders --> ordersDb
+payments --> paymentsDb
+reservations --> reservationsDb
+
+note bottom of host
+Compose declara seis bases/volúmenes independientes y red privada.
+Solo Gateway tiene ports; Docker no estuvo disponible para ejecutar/validar
+esta topología durante la revisión.
+end note
+note bottom of payments
+Webpay es una simulación académica. Payments valida el webhook HMAC,
+timestamp y event_id; no hay integración financiera oficial.
+end note
+@enduml

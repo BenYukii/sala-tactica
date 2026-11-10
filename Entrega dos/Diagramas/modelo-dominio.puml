@@ -1,0 +1,127 @@
+@startuml
+title La Nonna - modelo de dominio y propiedad de datos
+hide methods
+skinparam classAttributeIconSize 0
+
+package "Auth Service / auth_data" {
+  class User {
+    id: integer
+    username: unique string
+    password_hash: string
+    password_salt: string
+    role: user | admin
+    full_name: string
+  }
+  class Session {
+    id: integer
+    user_id: integer
+    token: unique string
+    expires_at: datetime
+  }
+  User "1" -- "0..*" Session
+}
+
+package "Clients Service / clients_data" {
+  class Client {
+    id: integer
+    user_id: integer
+    username: string
+    full_name: string
+    email: unique string
+    phone: string?
+  }
+}
+
+package "Reservations Service / reservations_data" {
+  class Reservation {
+    id: integer
+    user_id: integer?
+    name: string
+    email: string
+    people: integer
+    datetime: datetime
+    status: string
+  }
+}
+
+package "Inventory Service / inventory_data" {
+  class Product {
+    id: integer
+    nombre: string
+    descripcion: string
+    precio: decimal
+    categoria: string
+    stock: integer
+  }
+  class StockReservation {
+    reference: unique UUID
+    items_json: JSON
+    products_json: price/name snapshot
+    status: reserved | released
+  }
+  class InventoryMovement {
+    id: integer
+    product_id: integer
+    actor_user_id: integer
+    quantity_delta: integer
+    reason: string
+  }
+  Product "1" -- "0..*" InventoryMovement
+  Product "1" -- "0..*" StockReservation : product IDs in snapshot
+}
+
+package "Orders Service / orders_data" {
+  class Order {
+    id: integer
+    user_id: integer
+    inventory_reference: unique UUID
+    status: pending | confirmed | preparing | ready | completed | cancelled
+    total: decimal
+  }
+  class OrderItem {
+    id: integer
+    product_id: integer
+    product_name: string
+    unit_price: decimal
+    quantity: integer
+  }
+  Order "1" *-- "1..*" OrderItem
+}
+
+package "Payments Service / payments_data" {
+  class Payment {
+    id: integer
+    order_id: integer
+    user_id: integer
+    amount: decimal
+    status: pending | succeeded | failed | refunded
+    provider: webpay-simulated
+    provider_reference: unique string
+    idempotency_key: unique string
+  }
+  class WebhookEvent {
+    event_id: unique string
+    payment_id: integer
+    payload_hash: SHA-256
+    status: pending | processed
+  }
+  Payment "1" -- "0..*" WebhookEvent
+}
+
+User ..> Client : user_id via registration contract
+User ..> Order : user_id claim
+User ..> Payment : user_id claim
+User ..> Reservation : optional user_id claim
+StockReservation ..> Order : inventory_reference
+Order ..> Product : product_id + immutable snapshot
+Payment ..> Order : HTTP contract; no cross-DB foreign key
+Payment ..> OrderItem : amount validated via Orders API
+
+note bottom
+Cada servicio es dueño de su SQLite. Las relaciones entre paquetes
+son referencias de identidad/contrato, no claves foráneas compartidas.
+Orders solicita reserva/liberación idempotente a Inventory y guarda
+su propio snapshot; fallos entre servicios se compensan, no son ACID global.
+Webpay es un simulador ficticio: sin integración oficial ni cargos reales.
+end note
+@enduml

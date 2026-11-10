@@ -1,0 +1,17 @@
+{
+  "name": "sala-tactica-auth-service",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Auth Service con sesiones opacas y secretos internos obtenidos desde HashiCorp Vault",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "check": "node --check server.js && node --check src/app.js && node --check src/users.js && node --check src/sessions.js && node --check src/vault.js && node --check src/internalSecret.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2"
+  }
+}

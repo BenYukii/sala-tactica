@@ -1,0 +1,22 @@
+{
+  "name": "la-nonna-semana-8",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Frontend y API REST modular de La Nonna con persistencia SQLite",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "start:microservice": "node src/microservices/server.js",
+    "dev": "node --watch server.js",
+    "check": "node --check server.js && node --check src/infrastructure/asyncHandler.js && node --check src/infrastructure/database.js && node --check src/modules/index.js && node --check src/modules/auth/routes.js && node --check src/modules/auth/service.js && node --check src/modules/auth/repository.js && node --check src/modules/auth/middleware.js && node --check src/modules/catalog/routes.js && node --check src/modules/catalog/service.js && node --check src/modules/catalog/repository.js && node --check src/modules/reservations/routes.js && node --check src/modules/reservations/service.js && node --check src/modules/reservations/repository.js && node --check src/modules/orders/routes.js && node --check src/modules/orders/service.js && node --check src/modules/orders/repository.js && node --check src/modules/clients/routes.js && node --check src/modules/clients/service.js && node --check src/modules/clients/repository.js && node --check src/modules/inventory/routes.js && node --check src/modules/inventory/service.js && node --check src/modules/inventory/repository.js && node --check src/modules/payments/routes.js && node --check src/modules/payments/service.js && node --check src/modules/payments/repository.js && node --check src/modules/payments/webpaySimulator.js && node --check src/modules/observability/routes.js && node --check src/modules/graphql/routes.js && node --check src/modules/graphql/schema.js && node --check src/microservices/database.js && node --check src/microservices/security.js && node --check src/microservices/apps.js && node --check src/microservices/graphql.js && node --check src/microservices/gateway.js && node --check src/microservices/server.js && node --check src/microservices/vault-bootstrap.js && node --check src/microservices/vault-entrypoint.js && node --check test/orders.test.js && node --check test/microservices.test.js && node --check test/load.js && node --check frontend/js/components.js && node --check frontend/js/app.js",
+    "test": "node --test test/orders.test.js test/microservices.test.js",
+    "loadtest": "node test/load.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "graphql": "^16.11.0",
+    "sqlite3": "^6.0.1"
+  }
+}

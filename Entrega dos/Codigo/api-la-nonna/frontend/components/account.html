@@ -1,0 +1,52 @@
+<section class="wrap account" id="account" aria-labelledby="account-title">
+  <div class="section-head">
+    <h2 id="account-title">Mi cuenta</h2>
+    <p>Inicia sesión para consultar tus pedidos y el menú desde el gateway GraphQL.</p>
+  </div>
+  <form id="account-login" class="account-login">
+    <div class="form-field">
+      <label for="account-username">Usuario</label>
+      <input id="account-username" name="username" autocomplete="username" required>
+    </div>
+    <div class="form-field">
+      <label for="account-password">Contraseña</label>
+      <input id="account-password" name="password" type="password" autocomplete="current-password" required>
+    </div>
+    <button class="btn-primary" type="submit">Iniciar sesión</button>
+  </form>
+  <details id="account-register">
+    <summary>Crear una cuenta de cliente</summary>
+    <form id="client-register-form" class="account-login">
+      <div class="form-field">
+        <label for="register-full-name">Nombre completo</label>
+        <input id="register-full-name" name="full_name" autocomplete="name" maxlength="100" required>
+      </div>
+      <div class="form-field">
+        <label for="register-email">Correo</label>
+        <input id="register-email" name="email" type="email" autocomplete="email" maxlength="254" required>
+      </div>
+      <div class="form-field">
+        <label for="register-phone">Teléfono (opcional)</label>
+        <input id="register-phone" name="phone" type="tel" autocomplete="tel" maxlength="32">
+      </div>
+      <div class="form-field">
+        <label for="register-username">Usuario</label>
+        <input id="register-username" name="username" autocomplete="username" minlength="3" maxlength="32" required>
+      </div>
+      <div class="form-field">
+        <label for="register-password">Contraseña (mínimo 12 caracteres)</label>
+        <input id="register-password" name="password" type="password" autocomplete="new-password" minlength="12" maxlength="128" required>
+      </div>
+      <button class="btn-primary" type="submit">Crear cuenta</button>
+    </form>
+  </details>
+  <p id="account-status" role="status" aria-live="polite"></p>
+  <div id="account-dashboard" hidden>
+    <div class="account-actions">
+      <p id="account-greeting"></p>
+      <button class="btn-ghost" id="account-refresh" type="button">Actualizar</button>
+      <button class="btn-ghost" id="account-logout" type="button">Cerrar sesión</button>
+    </div>
+    <div class="account-overview" id="account-overview"></div>
+  </div>
+</section>

@@ -1,0 +1,261 @@
+x-service-common: &service-common
+  build: .
+  entrypoint: ["node", "src/microservices/vault-entrypoint.js"]
+  command: ["src/microservices/server.js"]
+  init: true
+  restart: unless-stopped
+  environment: &service-environment
+    NODE_ENV: production
+    VAULT_ADDR: http://vault:8200
+  networks:
+    - private
+  healthcheck:
+    test:
+      - CMD
+      - node
+      - -e
+      - "fetch('http://127.0.0.1:'+process.env.PORT+'/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+    interval: 20s
+    timeout: 5s
+    retries: 5
+    start_period: 10s
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+
+services:
+  vault:
+    image: hashicorp/vault:1.20.4
+    entrypoint: ["vault"]
+    command:
+      - server
+      - -dev
+      - -dev-root-token-id=${VAULT_DEV_ROOT_TOKEN:?Define VAULT_DEV_ROOT_TOKEN en el archivo de entorno de Compose}
+      - -dev-listen-address=0.0.0.0:8200
+    environment:
+      VAULT_ADDR: http://127.0.0.1:8200
+      VAULT_DISABLE_MLOCK: "true"
+    networks:
+      - private
+    healthcheck:
+      test: ["CMD", "vault", "status", "-address=http://127.0.0.1:8200"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 5s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    logging:
+      driver: "none"
+    restart: unless-stopped
+
+  vault-bootstrap:
+    build: .
+    entrypoint: ["node"]
+    command: ["src/microservices/vault-bootstrap.js"]
+    init: true
+    restart: "no"
+    environment:
+      VAULT_ADDR: http://vault:8200
+      VAULT_TOKEN: ${VAULT_DEV_ROOT_TOKEN:?Define VAULT_DEV_ROOT_TOKEN en el archivo de entorno de Compose}
+      BOOTSTRAP_ADMIN_USERNAME: ${BOOTSTRAP_ADMIN_USERNAME:-}
+      BOOTSTRAP_ADMIN_PASSWORD: ${BOOTSTRAP_ADMIN_PASSWORD:-}
+      BOOTSTRAP_ADMIN_FULL_NAME: ${BOOTSTRAP_ADMIN_FULL_NAME:-}
+    networks:
+      - private
+    volumes:
+      - vault_gateway_token:/run/vault-tokens/gateway
+      - vault_auth_token:/run/vault-tokens/auth
+      - vault_clients_token:/run/vault-tokens/clients
+      - vault_inventory_token:/run/vault-tokens/inventory
+      - vault_orders_token:/run/vault-tokens/orders
+      - vault_payments_token:/run/vault-tokens/payments
+      - vault_reservations_token:/run/vault-tokens/reservations
+      - vault_graphql_token:/run/vault-tokens/graphql
+    depends_on:
+      vault:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+  gateway:
+    <<: *service-common
+    environment:
+      <<: *service-environment
+      SERVICE_NAME: gateway
+      PORT: 4100
+      VAULT_TOKEN_FILE: /run/vault-token/token
+      RATE_LIMIT_MAX: ${RATE_LIMIT_MAX:-120}
+      LOGIN_RATE_LIMIT_MAX: ${LOGIN_RATE_LIMIT_MAX:-10}
+      GATEWAY_TIMEOUT_MS: ${GATEWAY_TIMEOUT_MS:-3000}
+    ports:
+      - "${PORT:-4000}:4100"
+    volumes:
+      - vault_gateway_token:/run/vault-token:ro
+    networks:
+      - edge
+      - private
+    depends_on:
+      vault-bootstrap:
+        condition: service_completed_successfully
+      auth:
+        condition: service_healthy
+      clients:
+        condition: service_healthy
+      inventory:
+        condition: service_healthy
+      orders:
+        condition: service_healthy
+      payments:
+        condition: service_healthy
+      reservations:
+        condition: service_healthy
+      graphql:
+        condition: service_healthy
+
+  auth:
+    <<: *service-common
+    environment:
+      <<: *service-environment
+      SERVICE_NAME: auth
+      PORT: 4101
+      VAULT_TOKEN_FILE: /run/vault-token/token
+      DB_PATH: /app/storage/auth.sqlite
+      SESSION_TTL_SECONDS: ${SESSION_TTL_SECONDS:-86400}
+    volumes:
+      - auth_data:/app/storage
+      - vault_auth_token:/run/vault-token:ro
+    depends_on:
+      vault-bootstrap:
+        condition: service_completed_successfully
+
+  clients:
+    <<: *service-common
+    environment:
+      <<: *service-environment
+      SERVICE_NAME: clients
+      PORT: 4102
+      VAULT_TOKEN_FILE: /run/vault-token/token
+      DB_PATH: /app/storage/clients.sqlite
+      AUTH_SERVICE_URL: http://auth:4101
+    volumes:
+      - clients_data:/app/storage
+      - vault_clients_token:/run/vault-token:ro
+    depends_on:
+      vault-bootstrap:
+        condition: service_completed_successfully
+      auth:
+        condition: service_healthy
+
+  inventory:
+    <<: *service-common
+    environment:
+      <<: *service-environment
+      SERVICE_NAME: inventory
+      PORT: 4103
+      VAULT_TOKEN_FILE: /run/vault-token/token
+      DB_PATH: /app/storage/inventory.sqlite
+    volumes:
+      - inventory_data:/app/storage
+      - vault_inventory_token:/run/vault-token:ro
+    depends_on:
+      vault-bootstrap:
+        condition: service_completed_successfully
+
+  orders:
+    <<: *service-common
+    environment:
+      <<: *service-environment
+      SERVICE_NAME: orders
+      PORT: 4104
+      VAULT_TOKEN_FILE: /run/vault-token/token
+      DB_PATH: /app/storage/orders.sqlite
+      INVENTORY_SERVICE_URL: http://inventory:4103
+      PAYMENTS_SERVICE_URL: http://payments:4105
+    volumes:
+      - orders_data:/app/storage
+      - vault_orders_token:/run/vault-token:ro
+    depends_on:
+      vault-bootstrap:
+        condition: service_completed_successfully
+      inventory:
+        condition: service_healthy
+
+  payments:
+    <<: *service-common
+    environment:
+      <<: *service-environment
+      SERVICE_NAME: payments
+      PORT: 4105
+      VAULT_TOKEN_FILE: /run/vault-token/token
+      DB_PATH: /app/storage/payments.sqlite
+      ORDERS_SERVICE_URL: http://orders:4104
+      PAYMENTS_PUBLIC_URL: http://127.0.0.1:4105
+    volumes:
+      - payments_data:/app/storage
+      - vault_payments_token:/run/vault-token:ro
+    depends_on:
+      vault-bootstrap:
+        condition: service_completed_successfully
+      orders:
+        condition: service_healthy
+
+  reservations:
+    <<: *service-common
+    environment:
+      <<: *service-environment
+      SERVICE_NAME: reservations
+      PORT: 4106
+      VAULT_TOKEN_FILE: /run/vault-token/token
+      DB_PATH: /app/storage/reservations.sqlite
+    volumes:
+      - reservations_data:/app/storage
+      - vault_reservations_token:/run/vault-token:ro
+    depends_on:
+      vault-bootstrap:
+        condition: service_completed_successfully
+
+  graphql:
+    <<: *service-common
+    environment:
+      <<: *service-environment
+      SERVICE_NAME: graphql
+      PORT: 4107
+      VAULT_TOKEN_FILE: /run/vault-token/token
+      INVENTORY_SERVICE_URL: http://inventory:4103
+      ORDERS_SERVICE_URL: http://orders:4104
+    volumes:
+      - vault_graphql_token:/run/vault-token:ro
+    depends_on:
+      vault-bootstrap:
+        condition: service_completed_successfully
+      inventory:
+        condition: service_healthy
+      orders:
+        condition: service_healthy
+
+networks:
+  edge:
+  private:
+    internal: true
+
+volumes:
+  auth_data:
+  clients_data:
+  inventory_data:
+  orders_data:
+  payments_data:
+  reservations_data:
+  vault_gateway_token:
+  vault_auth_token:
+  vault_clients_token:
+  vault_inventory_token:
+  vault_orders_token:
+  vault_payments_token:
+  vault_reservations_token:
+  vault_graphql_token:

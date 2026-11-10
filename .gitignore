@@ -1,3 +1,11 @@
 # Archivo de referencia (solución completa de la actividad): NO se sube a GitHub
 /DWEB-completo.html
 Semana5/.env
+/Entrega dos/**/.env
+/Entrega dos/**/*.db
+/Entrega dos/**/*.db-wal
+/Entrega dos/**/*.db-shm
+/Entrega dos/**/*.sqlite
+/Entrega dos/**/*.sqlite3
+/Entrega dos/Codigo/**/node_modules/
+*.zip
