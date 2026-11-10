@@ -1,0 +1,104 @@
+workspace "La Nonna" "Contexto y contenedores C4 para la Entrega 2." {
+    model {
+        visitante = person "Visitante" "Explora el restaurante, consulta el menú y solicita una reserva." "Persona"
+        cliente = person "Cliente" "Inicia sesión y consulta o gestiona sus propios recursos." "Persona"
+        administrador = person "Administrador" "Gestiona el menú y atiende las reservas y operaciones autorizadas." "Persona"
+        proveedorPago = softwareSystem "Proveedor de pago" "Procesa pagos y envía notificaciones verificables." "Sistema externo"
+        vault = softwareSystem "HashiCorp Vault" "Custodia secretos de integración y los entrega a servicios autorizados." "Sistema externo"
+
+        laNonna = softwareSystem "La Nonna" "Aplicación digital para consultar el menú, gestionar reservas y, si el alcance lo confirma, pedidos y pagos." {
+            frontend = container "Frontend web" "Interfaz adaptable para menú, reservas, cuenta y seguimiento de pedidos." "HTML, CSS y JavaScript"
+            api = container "API Gateway REST" "Punto de entrada HTTPS. Sirve el frontend, valida solicitudes, enruta REST e identidad y aplica límites." "Node.js / Express"
+            graphql = container "GraphQL Gateway" "API de lectura agregada. Autoriza operaciones y campos y consulta varios dominios; acceso solo a través del gateway." "GraphQL / Node.js (propuesto)"
+            auth = container "Auth Service" "Inicia sesión, valida credenciales y administra emisión, introspección, expiración y revocación de sesiones." "Node.js / HTTP"
+            authDb = container "Auth DB" "Almacena hashes de credenciales, estado de cuentas y referencias necesarias para revocar sesiones; nunca almacena contraseñas en texto plano." "Base de datos relacional (propuesta)" "Database"
+            reservations = container "Reservations" "Valida solicitudes de reserva y administra su ciclo de vida y acceso administrativo." "Módulo de dominio privado (propuesto)"
+            inventory = container "Inventory" "Mantiene el catálogo publicado y es autoridad de precio y disponibilidad." "Módulo de dominio privado (propuesto)"
+            orders = container "Orders" "Crea pedidos, vuelve a validar artículos, calcula totales y controla estados e historial." "Módulo de dominio privado (propuesto)"
+            clients = container "Clients" "Mantiene perfiles mínimos y aplica propiedad y acceso a recursos de clientes." "Módulo de dominio privado (propuesto)"
+            payments = container "Payments" "Crea intentos, integra con el proveedor y procesa notificaciones verificadas de forma idempotente." "Módulo de dominio privado (propuesto)"
+            reservationDb = container "Reservations DB" "Persiste solicitudes y estados de reserva; acceso exclusivo del dominio Reservations." "Base de datos relacional (propuesta)" "Database"
+            inventoryDb = container "Inventory DB" "Persiste productos, precios y disponibilidad; Inventory es su autoridad de escritura." "Base de datos relacional (propuesta)" "Database"
+            ordersDb = container "Orders DB" "Persiste pedidos y detalles con snapshot de nombre y precio aceptados." "Base de datos relacional (propuesta)" "Database"
+            clientsDb = container "Clients DB" "Persiste perfiles y datos mínimos de clientes con acceso restringido." "Base de datos relacional (propuesta)" "Database"
+            paymentsDb = container "Payments DB" "Persiste referencias e intentos de pago, nunca datos de tarjeta." "Base de datos relacional (propuesta)" "Database"
+        }
+
+        visitante -> laNonna "Consulta el menú y solicita una reserva" "HTTPS"
+        cliente -> laNonna "Inicia sesión y gestiona sus recursos" "HTTPS"
+        administrador -> laNonna "Administra menú y operaciones autorizadas" "HTTPS"
+        laNonna -> vault "Obtiene secretos de servicio con mínimo privilegio" "Conexión TLS"
+        laNonna -> proveedorPago "Procesa pagos y recibe notificaciones verificables (si aplica)" "API TLS / webhook firmado"
+
+        visitante -> frontend "Usa el sitio sin iniciar sesión" "HTTPS"
+        cliente -> frontend "Usa menú, cuenta y pedidos" "HTTPS"
+        administrador -> frontend "Usa herramientas administrativas" "HTTPS"
+        frontend -> api "Solicita páginas y operaciones REST" "HTTPS / JSON"
+        api -> auth "Valida identidad y administra sesiones (integración propuesta)" "HTTP privado / identidad de servicio"
+        api -> reservations "Crea solicitudes y consulta reservas autorizadas (servicio propuesto)" "HTTP privado / JSON"
+        api -> inventory "Consulta menú y enruta cambios autorizados (servicio propuesto)" "HTTP privado / JSON"
+        api -> orders "Crea y consulta pedidos autorizados (servicio propuesto)" "HTTP privado / JSON"
+        api -> clients "Gestiona perfil y propiedad de recursos (servicio propuesto)" "HTTP privado / JSON"
+        api -> payments "Inicia y consulta pagos autorizados (servicio propuesto)" "HTTP privado / JSON"
+        api -> graphql "Reenvía consultas agregadas autenticadas (gateway propuesto)" "HTTP privado / GraphQL"
+        auth -> authDb "Lee credenciales y actualiza sesiones/revocaciones (persistencia propuesta)" "SQL / red privada"
+        auth -> clients "Consulta estado de cuenta y roles (integración propuesta)" "HTTP privado"
+        graphql -> inventory "Lee productos y disponibilidad (integración propuesta)" "HTTP privado"
+        graphql -> orders "Lee pedidos del usuario autorizado (integración propuesta)" "HTTP privado"
+        graphql -> clients "Lee perfil mínimo autorizado (integración propuesta)" "HTTP privado"
+        graphql -> payments "Lee estado de pago autorizado (integración propuesta)" "HTTP privado"
+        reservations -> clients "Verifica identidad y propiedad antes de exponer reservas (integración propuesta)" "HTTP privado"
+        orders -> inventory "Verifica precio y disponibilidad antes de confirmar (integración propuesta)" "HTTP privado"
+        orders -> clients "Vincula el pedido con el cliente autenticado (integración propuesta)" "HTTP privado"
+        payments -> orders "Verifica total y estado del pedido antes de iniciar el cobro (integración propuesta)" "HTTP privado"
+        payments -> proveedorPago "Solicita pago y verifica el resultado" "API TLS"
+        proveedorPago -> payments "Notifica cambios mediante webhook firmado" "HTTPS"
+        api -> vault "Lee secretos requeridos por el gateway" "TLS / credencial de servicio"
+        auth -> vault "Lee secreto para operaciones internas" "TLS / credencial de servicio"
+        payments -> vault "Lee credencial del proveedor" "TLS / credencial de servicio"
+        reservations -> reservationDb "Lee y persiste reservas" "SQL / red privada"
+        inventory -> inventoryDb "Lee y persiste catálogo" "SQL / red privada"
+        orders -> ordersDb "Lee y persiste pedidos e historial" "SQL / red privada"
+        clients -> clientsDb "Lee y persiste perfiles" "SQL / red privada"
+        payments -> paymentsDb "Lee y persiste intentos y referencias" "SQL / red privada"
+    }
+
+    views {
+        systemContext laNonna "C1-Contexto" {
+            include visitante
+            include cliente
+            include administrador
+            include laNonna
+            include vault
+            include proveedorPago
+            autoLayout lr
+        }
+
+        container laNonna "C2-Contenedores" {
+            include *
+            autoLayout lr
+        }
+
+        styles {
+            element "Person" {
+                background #08427B
+                color #FFFFFF
+                shape Person
+            }
+            element "Software System" {
+                background #1168BD
+                color #FFFFFF
+            }
+            element "Container" {
+                background #438DD5
+                color #FFFFFF
+            }
+            element "Database" {
+                shape Cylinder
+            }
+            relationship "Relationship" {
+                routing Orthogonal
+            }
+        }
+    }
+}
